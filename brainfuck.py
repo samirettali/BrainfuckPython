@@ -1,9 +1,8 @@
 import sys
+import os
 
 def main():
 
-    debug = False
-    stop = False
 
     if len(sys.argv) > 1:
 
@@ -13,9 +12,14 @@ def main():
         pointer = 0
         limit = sys.maxint
         output = ''
+        debug = False
+        stop = False
+
+        rows, cols = os.popen('stty size', 'r').read().split()
+        print cols
+
         # read the command options
         for i in range(1,len(sys.argv)-1):
-            print sys.argv[i]
             if sys.argv[i] == '-d':
                 debug = True
             elif sys.argv[i] == '-s':
@@ -38,8 +42,11 @@ def main():
 
             #debug informations
             if(debug or stop):
-                print readable_source
-                sys.stdout.write(' '*pointer + '^\n')
+                if(int(len(readable_source)) < int(cols)):
+                    print readable_source
+                    sys.stdout.write(' '*pointer + '^\n')
+                else:
+                    print source
                 print 'len\t', len(source)
                 print 'pointer\t', pointer
                 print 'instr\t', source[pointer]
