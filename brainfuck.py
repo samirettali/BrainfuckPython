@@ -62,13 +62,13 @@ def main():
                 pointer+=1
 
             elif source[pointer] == '+':
-                #if abs(mem[address] < 255):
-                mem[address] += 1
+                if abs(mem[address] < limit):
+                    mem[address] += 1
                 pointer+=1
 
             elif source[pointer] == '-':
-                #if abs(mem[address]) < 255:
-                mem[address] -= 1
+                if abs(mem[address]) < limit:
+                    mem[address] -= 1
                 pointer+=1
 
             elif source[pointer] == '.':
