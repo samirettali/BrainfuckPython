@@ -15,9 +15,6 @@ def main():
         debug = False
         stop = False
 
-        rows, cols = os.popen('stty size', 'r').read().split()
-        print cols
-
         # read the command options
         for i in range(1,len(sys.argv)-1):
             if sys.argv[i] == '-d':
@@ -40,13 +37,18 @@ def main():
 
         while(pointer < len(source)):
 
-            #debug informations
-            if(debug or stop):
+            cols = os.popen('stty size', 'r').read().split()[1]
+
+            if debug or stop:
                 if(int(len(readable_source)) < int(cols)):
                     print readable_source
                     sys.stdout.write(' '*pointer + '^\n')
                 else:
-                    print source
+                    #print source[:(pointer-1)%1] + '{' + source[pointer] + '}' + source[pointer+1:]
+                    if (pointer-1) < 0:
+                        print source[:0] + '{' + source[pointer] + '}' + source[pointer+1:]
+                    else:
+                        print source[:pointer] + '{' + source[pointer] + '}' + source[pointer+1:]
                 print 'len\t', len(source)
                 print 'pointer\t', pointer
                 print 'instr\t', source[pointer]
@@ -56,9 +58,6 @@ def main():
                 print 'limit\t', limit
                 print 'cells\t', mem_size
                 print mem
-
-            if(stop):
-                raw_input()
 
             if source[pointer] == '>':
                 address += 1
@@ -83,9 +82,8 @@ def main():
                 pointer+=1
 
             elif source[pointer] == '.':
-                if(debug or stop):
-                    output += unichr(mem[address])
-                else:
+                output += unichr(mem[address])
+                if not debug and not stop:
                     sys.stdout.write(unichr(mem[address]))
                 pointer+=1
 
@@ -128,6 +126,9 @@ def main():
             else:
                 print 'Unexpected char \'', source[pointer], 'at index', pointer
                 break
+
+            if stop:
+                raw_input()
     else:
         print 'python brainfuck.py [options] brainfuck_source_file\n'
         print 'brainfuck interpreter - (C) 2016 Samir Ettali\n'
