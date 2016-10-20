@@ -7,11 +7,12 @@ def main():
 
     if len(sys.argv) > 1:
 
-        mem_size = 10
+        mem_size = 30
         mem = [0] * mem_size
         address = 0
         pointer = 0
         limit = sys.maxint
+        output = ''
         # read the command options
         for i in range(1,len(sys.argv)-1):
             print sys.argv[i]
@@ -31,17 +32,20 @@ def main():
 
         file = open(sys.argv[-1])
         source = file.read()
+        readable_source = source.replace('\n', '').replace('\t', '').replace(' ', '')
 
         while(pointer < len(source)):
 
             #debug informations
             if(debug or stop):
-                print source
+                print readable_source
+                sys.stdout.write(' '*pointer + '^\n')
                 print 'len\t', len(source)
                 print 'pointer\t', pointer
                 print 'instr\t', source[pointer]
                 print 'address\t', address
                 print 'value\t', mem[address]
+                print 'output\t', output
                 print 'limit\t', limit
                 print 'cells\t', mem_size
                 print mem
@@ -72,15 +76,14 @@ def main():
                 pointer+=1
 
             elif source[pointer] == '.':
-                sys.stdout.write(unichr(mem[address]))
+                if(debug or stop):
+                    output += unichr(mem[address])
+                else:
+                    sys.stdout.write(unichr(mem[address]))
                 pointer+=1
 
             elif source[pointer] == ',':
-                user_input = raw_input('input: ')
-                try:
-                    mem[address] = int(user_input)
-                except ValueError, e:
-                    mem[address] = ord(user_input)
+                mem[address] = ord(raw_input('input: '))
                 pointer+=1
 
             elif source[pointer] == '[':
